@@ -1,6 +1,7 @@
-# ap4python
 
-A Python module project managed with [uv](https://github.com/astral-sh/uv).
+# p4async
+
+An extension to the p4python module, adding async functionality to Perforce.
 
 ## Setup
 
@@ -15,12 +16,21 @@ A Python module project managed with [uv](https://github.com/astral-sh/uv).
 
 ## Usage
 
-Add your Python modules in the `ap4python` directory.
+```python
+from p4async import P4Async
+p4a = P4Async()
+await p4a.aconnect()
+```
+
+All relevant Perforce commands have async counterparts prefixed with `a`.
+For example: `aconnect()`, `arun()`, `arun_clients()`, `afetch_change()`, etc.
+
+Commands are executed with a lock on a worker thread. The way this is done can be
+customized via subclassing.
 
 ## Development
 
-- Use `uv` for dependency management and virtual environment.
-- Update `requirements.txt` as needed.
+- Use `uv` for dependency management and virtual environments.
 
 ## License
 
