@@ -11,6 +11,8 @@ dependencies = [
     "p4python>=2020.1.0",
 ]
 
+license = { text = "MIT" }
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
