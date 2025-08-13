@@ -1,6 +1,7 @@
 import asyncio
-import P4
 import threading
+from typing import Any, Callable, Set, Type, Awaitable, Optional, Union
+import P4
 
 
 class P4Async(P4.P4):
@@ -10,14 +11,13 @@ class P4Async(P4.P4):
     """
 
     # Methods that are simply wrapped to a thread for async execution
-    simple_wrap_methods = {
+    simple_wrap_methods: Set[str] = {
         "connect",
         "disconnect",
         "run_tickets",
     }
 
-    # Methods that wrap the internal `run`` command for async execution
-    run_wrap_methods = {
+    run_wrap_methods: Set[str] = {
         "run_submit",
         "run_shelve",
         "delete_shelve",
@@ -28,11 +28,13 @@ class P4Async(P4.P4):
         "run_resolve",
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.lock = threading.Lock()
 
-    async def _run_blocking(self, func, *args, **kwargs):
+    async def _run_blocking(
+        self, func: Callable[..., Any], *args: Any, **kwargs: Any
+    ) -> Any:
         """
         Default method to run a blocking Perforce command.
         Override this method for customized thread scheduling.
@@ -46,7 +48,9 @@ class P4Async(P4.P4):
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, helper)
 
-    def run(self, *args, with_async=False, **kwargs):
+    def run(
+        self, *args: Any, with_async: bool = False, **kwargs: Any
+    ) -> Union[Any, Awaitable[Any]]:
         """
         Run a Perforce command, optionally asynchronously.
         """
@@ -57,20 +61,20 @@ class P4Async(P4.P4):
             # execute directly
             return self.do_run(*args, **kwargs)
 
-    def do_run(self, *args, **kwargs):
+    def do_run(self, *args: Any, **kwargs: Any) -> Any:
         """
         Run a Perforce command.
         Override this method in a child class to customize the behavior of run further.
         """
         return super().run(*args, **kwargs)
 
-    async def arun(self, *args, **kwargs):
+    async def arun(self, *args: Any, **kwargs: Any) -> Any:
         """
         Asynchronous run method.
         """
         return await self._run_blocking(self.do_run, *args, **kwargs)
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         if name.startswith("arun_"):
             cmd = name[len("arun_") :]
             return lambda *args, **kargs: self.arun(cmd, *args, **kargs)
@@ -98,7 +102,7 @@ class P4Async(P4.P4):
             )
         return super().__getattr__(name)
 
-    async def __afetch(self, cmd, *args, **kargs):
+    async def __afetch(self, cmd: str, *args: Any, **kargs: Any) -> Any:
         """
         Handle async versions of fetch commands.
         """
@@ -108,7 +112,7 @@ class P4Async(P4.P4):
                 return r
         return result[0]
 
-    async def __aiterate(self, cmd, *args, **kargs):
+    async def __aiterate(self, cmd: str, *args: Any, **kargs: Any):
         """
         Handle async versions of iterate commands.
         """
@@ -121,17 +125,22 @@ class P4Async(P4.P4):
         for spec in specs:
             yield await self.arun(spec, "-o", spec[field])[0]
 
-    async def __asave(self, cmd, *args, **kargs):
+    async def __asave(self, cmd: str, *args: Any, **kargs: Any) -> Any:
         self.input = args[0]
         return await self.arun(cmd, "-i", args[1:], **kargs)
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "P4Async":
         """
         Asynchronous context manager enter method.
         """
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[Any],
+    ) -> None:
         """
         Asynchronous context manager exit method.
         """
