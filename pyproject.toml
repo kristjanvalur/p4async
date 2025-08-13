@@ -1,5 +1,5 @@
 [project]
-name = "ap4python"
+name = "p4async"
 version = "0.1.0"
 description = "An async extension to p4python"
 readme = "README.md"
