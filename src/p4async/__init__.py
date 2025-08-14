@@ -37,11 +37,11 @@ class P4Async(P4.P4):
         # The P4 adapter can only have one operation executing at a time.
         self.lock = threading.Lock()
 
-    async def _run_blocking(
+    async def execute(
         self, func: Callable[..., Any], *args: Any, **kwargs: Any
     ) -> Any:
         """
-        Default method to run a blocking Perforce command.
+        Default method to run a synchronous Perforce command.
         Override this method for customized thread scheduling.
         """
 
@@ -53,35 +53,38 @@ class P4Async(P4.P4):
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, helper)
 
-    # Our customization of `run`, adding `with_async` to allow for async execution.
     def run(
         self, *args: Any, with_async: bool = False, **kwargs: Any
     ) -> Union[Any, Awaitable[Any]]:
         """
-        Run a Perforce command, optionally asynchronously.
+        Run a Perforce command.
+
+        If `with_async` is True, the command will return an awaitable that can be awaited
+        to execute the command asynchronously. If `with_async` is False, the command will
+        execute directly in the current thread.
         """
         if with_async:
             # return an awaitable
-            return self._run_blocking(self.do_run, *args, **kwargs)
+            return self.execute(self.sync_run, *args, **kwargs)
         else:
             # execute directly
-            return self.do_run(*args, **kwargs)
+            return self.sync_run(*args, **kwargs)
 
-    # A hook to call the original `run` method.  Child classes who want to wrap
-    # extra functionality to the blocking `run` method can override this method.
-    # It will be called on a worker thread as appropriate.
-    def do_run(self, *args: Any, **kwargs: Any) -> Any:
+    def sync_run(self, *args: Any, **kwargs: Any) -> Any:
         """
         Run a Perforce command.
-        Override this method in a child class to customize the behavior of run further.
+        
+        A hook to call the original synchronous `run` method.  Child classes who want to wrap
+        extra functionality to the underlying `run` method can override this method.
+        It will be called on a worker thread as appropriate.
         """
         return super().run(*args, **kwargs)
 
     async def arun(self, *args: Any, **kwargs: Any) -> Any:
         """
-        Asynchronous run method.
+        Asynchronous  version of the `run` method.
         """
-        return await self._run_blocking(self.do_run, *args, **kwargs)
+        return await self.execute(self.sync_run, *args, **kwargs)
 
     def __getattr__(self, name: str) -> Any:
         if name.startswith("arun_"):
@@ -101,7 +104,7 @@ class P4Async(P4.P4):
             return lambda *args, **kargs: self.__aiterate(cmd, *args, **kargs)
         if name.startswith("a") and name[1:] in self.simple_wrap_methods:
             method = name[1:]
-            return lambda *args, **kwargs: self._run_blocking(
+            return lambda *args, **kwargs: self.execute(
                 getattr(self, method), *args, **kwargs
             )
         elif name.startswith("a") and name[1:] in self.run_wrap_methods:
