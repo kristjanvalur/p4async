@@ -1,18 +1,14 @@
 
 # p4async
 
-An extension to the p4python module, adding async functionality to Perforce.
+An extension to the [p4python](https://pypi.org/project/p4python/) module, adding async functionality to Perforce.
 
 ## Setup
 
-1. Install [uv](https://github.com/astral-sh/uv) if you don't have it:
-   ```powershell
-   pip install uv
-   ```
-2. Install dependencies:
-   ```powershell
-   uv sync
-   ```
+Use your favorite package manager to install the module into your project
+
+- `pip install p4async`
+- `uv add p4async`
 
 ## Usage
 
@@ -30,7 +26,7 @@ customized via subclassing.
 
 ## Development
 
-- Use `uv` for dependency management and virtual environments.
+- Use [uv](https://docs.astral.sh/uv/) for dependency management and virtual environments.
 
 ## License
 
