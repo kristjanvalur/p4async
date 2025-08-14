@@ -10,8 +10,16 @@ requires-python = ">=3.11"
 dependencies = [
     "p4python>=2020.1.0",
 ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
 
-license = { text = "MIT" }
+[project.urls]
+Homepage = "https://github.com/kristjanvalur/p4async"
+Issues = "https://github.com/kristjanvalue/p4async/issues"
 
 [build-system]
 requires = ["hatchling"]
