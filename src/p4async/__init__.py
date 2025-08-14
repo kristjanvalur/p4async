@@ -10,13 +10,16 @@ class P4Async(P4.P4):
     This class is a placeholder for future async methods.
     """
 
-    # Methods that are simply wrapped to a thread for async execution
+    # Methods that are simply wrapped to a thread for async execution.  These are methods
+    # that do not use `self.run` for execution.
     simple_wrap_methods: Set[str] = {
         "connect",
         "disconnect",
         "run_tickets",
     }
 
+    # Methods that are wrapped by adding `with_async=True` to the underlying
+    # call to 'self.run', leaving other processing to happen in the current Task.
     run_wrap_methods: Set[str] = {
         "run_submit",
         "run_shelve",
@@ -30,6 +33,8 @@ class P4Async(P4.P4):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        # A lock to synchronize access to the P4 adapter.
+        # The P4 adapter can only have one operation executing at a time.
         self.lock = threading.Lock()
 
     async def _run_blocking(
@@ -48,6 +53,7 @@ class P4Async(P4.P4):
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, helper)
 
+    # Our customization of `run`, adding `with_async` to allow for async execution.
     def run(
         self, *args: Any, with_async: bool = False, **kwargs: Any
     ) -> Union[Any, Awaitable[Any]]:
@@ -61,6 +67,9 @@ class P4Async(P4.P4):
             # execute directly
             return self.do_run(*args, **kwargs)
 
+    # A hook to call the original `run` method.  Child classes who want to wrap
+    # extra functionality to the blocking `run` method can override this method.
+    # It will be called on a worker thread as appropriate.
     def do_run(self, *args: Any, **kwargs: Any) -> Any:
         """
         Run a Perforce command.
