@@ -4,7 +4,7 @@ from typing import Any, Callable, Set, Type, Awaitable, Optional, Union
 import P4
 
 
-class p4async(P4.P4):
+class P4Async(P4.P4):
     """
     An async extension to P4.P4.
     This class is a placeholder for future async methods.
