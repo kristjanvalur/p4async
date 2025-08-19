@@ -35,7 +35,8 @@ class P4Async(P4.P4):
         super().__init__(*args, **kwargs)
         # A lock to synchronize access to the P4 adapter.
         # The P4 adapter can only have one operation executing at a time.
-        self.lock = threading.Lock()
+        # Can't use direct attribute setter on a P4 object.
+        self.__dict__["lock"] = threading.Lock()
 
     async def execute(
         self, func: Callable[..., Any], *args: Any, **kwargs: Any
