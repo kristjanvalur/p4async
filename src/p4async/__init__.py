@@ -46,13 +46,8 @@ class P4Async(P4.P4):
         Override this method for customized thread scheduling.
         """
 
-        def helper():
-            # Ensure thread safety: the P4 adapter can only have one operation at a time.
-            with self.lock:
-                return func(*args, **kwargs)
-
         loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(None, helper)
+        return await loop.run_in_executor(None, lambda: func(*args, **kwargs))
 
     def run(
         self, *args: Any, with_async: bool = False, **kwargs: Any
@@ -79,7 +74,9 @@ class P4Async(P4.P4):
         extra functionality to the underlying `run` method can override this method.
         It will be called on a worker thread as appropriate.
         """
-        return super().run(*args, **kwargs)
+        # Ensure thread safety: the P4 adapter can only have one operation at a time.
+        with self.lock:
+            return super().run(*args, **kwargs)
 
     async def arun(self, *args: Any, **kwargs: Any) -> Any:
         """
