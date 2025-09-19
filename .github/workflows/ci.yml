@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  # Allow manual runs from the Actions UI
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install uv and (optionally) Python
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+
+
+      - name: Sync project environment with uv
+        run: |
+          # Use locked installs when possible to ensure reproducible CI
+          uv sync --locked --all-extras --dev
+
+      - name: Run lint/format checks with uvx
+        run: |
+          # Run ruff via uvx (uv provides uvx as part of the installed toolchain).
+          # If uvx isn't present the step will fail naturally.
+          uvx ruff check
+          uvx ruff format --check
+
+      - name: Run tests via uv
+        run: |
+          # Run pytest inside the uv-managed environment
+          uv run pytest -q
