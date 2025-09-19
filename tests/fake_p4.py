@@ -15,10 +15,11 @@ Usage in tests:
 
 The module exposes module-level attribute `P4` so code that does `from P4 import P4` can be patched to use this.
 """
-from typing import Any, Callable, Dict
+
+import random
 import threading
 import time
-import random
+from typing import Any, Callable, Dict
 
 
 class P4:
@@ -82,7 +83,9 @@ class P4:
         acquired = self._request_lock.acquire(blocking=False)
         if not acquired:
             # Return an error-like response (lists/dicts are common with p4python)
-            return [{"code": "error", "data": "Only one concurrent request can be made on a connection"}]
+            return [
+                {"code": "error", "data": "Only one concurrent request can be made on a connection"}
+            ]
 
         try:
             # If tests set a block_event and the command matches, wait on the event
@@ -111,6 +114,7 @@ class P4:
         """
         if name in ("connected", "user", "client"):
             return object.__getattribute__(self, name)
+
         # Provide a callable that forwards to run for common P4 command methods
         def _cmd_method(*args: Any):
             return self.run(name, *args)
@@ -120,6 +124,7 @@ class P4:
 
 # Expose module-level P4 so tests can monkeypatch `P4` module imports.
 # Tests that do `import P4` or `from P4 import P4` can be monkeypatched to use this module.
+
 
 # Provide a convenience factory at module level for easier monkeypatching
 def P4Factory() -> P4:

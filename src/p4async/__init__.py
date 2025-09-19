@@ -1,6 +1,7 @@
 import asyncio
 import threading
-from typing import Any, Callable, Set, Type, Awaitable, Optional, Union
+from typing import Any, Awaitable, Callable, Optional, Set, Type, Union
+
 import P4
 
 
@@ -38,9 +39,7 @@ class P4Async(P4.P4):
         # Can't use direct attribute setter on a P4 object.
         self.__dict__["lock"] = threading.Lock()
 
-    async def execute(
-        self, func: Callable[..., Any], *args: Any, **kwargs: Any
-    ) -> Any:
+    async def execute(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
         """
         Default method to run a synchronous Perforce command.
         Override this method for customized thread scheduling.
@@ -69,7 +68,7 @@ class P4Async(P4.P4):
     def sync_run(self, *args: Any, **kwargs: Any) -> Any:
         """
         Run a Perforce command.
-        
+
         A hook to call the original synchronous `run` method.  Child classes who want to wrap
         extra functionality to the underlying `run` method can override this method.
         It will be called on a worker thread as appropriate.
@@ -102,14 +101,10 @@ class P4Async(P4.P4):
             return lambda *args, **kargs: self.__aiterate(cmd, *args, **kargs)
         if name.startswith("a") and name[1:] in self.simple_wrap_methods:
             method = name[1:]
-            return lambda *args, **kwargs: self.execute(
-                getattr(self, method), *args, **kwargs
-            )
+            return lambda *args, **kwargs: self.execute(getattr(self, method), *args, **kwargs)
         elif name.startswith("a") and name[1:] in self.run_wrap_methods:
             method = name[1:]
-            return lambda *args, **kwargs: getattr(self, method)(
-                *args, with_async=True, **kwargs
-            )
+            return lambda *args, **kwargs: getattr(self, method)(*args, with_async=True, **kwargs)
         return super().__getattr__(name)
 
     async def __afetch(self, cmd: str, *args: Any, **kargs: Any) -> Any:

@@ -30,3 +30,10 @@ Examples
 Notes
 - CI (tests for PRs/pushes) is still handled by the `CI` workflow in `.github/workflows/ci.yml`.
 - Release workflow runs tests inside the same workflow to ensure deterministic behavior and avoid cross-workflow coordination.
+
+Developer formatting
+--------------------
+
+We use Ruff for formatting in CI. Before pushing changes, please run the formatter locally to avoid CI failures:
+
+  uvx ruff format
