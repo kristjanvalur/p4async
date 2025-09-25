@@ -1,6 +1,6 @@
 [project]
 name = "p4async"
-version = "0.1.4"
+version = "0.1.5"
 description = "An async extension to p4python"
 readme = "README.md"
 authors = [

@@ -24,6 +24,11 @@ For example: `aconnect()`, `arun()`, `arun_clients()`, `afetch_change()`, etc.
 Commands are executed with a lock on a worker thread. The way this is done can be
 customized via subclassing.
 
+## Caveats
+
+It would appear that current versions of p4python do not release
+the pythong GIL (global interpreter lock) while doing a `connect()` call. This means that even `aconnect()` is currently blocking.  This might get fixed by Perforce at some point.
+
 ## Development
 
 - Use [uv](https://docs.astral.sh/uv/) for dependency management and virtual environments.

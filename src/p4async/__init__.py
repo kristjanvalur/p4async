@@ -1,4 +1,5 @@
 import asyncio
+import functools
 import threading
 from typing import Any, Awaitable, Callable, Optional, Set, Type, Union
 
@@ -77,6 +78,18 @@ class P4Async(P4.P4):
         with self.lock:
             return super().run(*args, **kwargs)
 
+    def wrap_lock(self, method: Callable[..., Any]) -> Callable[..., Any]:
+        """
+        Wrap a callable to ensure it is called with the lock held.
+        """
+
+        @functools.wraps(method)
+        def helper(*args, **kwargs):
+            with self.lock:
+                return method(*args, **kwargs)
+
+        return helper
+
     async def arun(self, *args: Any, **kwargs: Any) -> Any:
         """
         Asynchronous  version of the `run` method.
@@ -99,12 +112,16 @@ class P4Async(P4.P4):
         elif name.startswith("aiterate_"):
             cmd = name[len("aiterate_") :]
             return lambda *args, **kargs: self.__aiterate(cmd, *args, **kargs)
-        if name.startswith("a") and name[1:] in self.simple_wrap_methods:
-            method = name[1:]
-            return lambda *args, **kwargs: self.execute(getattr(self, method), *args, **kwargs)
-        elif name.startswith("a") and name[1:] in self.run_wrap_methods:
-            method = name[1:]
-            return lambda *args, **kwargs: getattr(self, method)(*args, with_async=True, **kwargs)
+        if name.startswith("a"):
+            tail = name[1:]
+            if tail in self.simple_wrap_methods:
+                # simple methods. wrapped with a lock and scheduled with execute.
+                method = self.wrap_lock(getattr(self, tail))
+                return lambda *args, **kwargs: self.execute(method, *args, **kwargs)
+            elif tail in self.run_wrap_methods:
+                # methods that delegate to self.run, can simply add the with_async flag.
+                method = getattr(self, tail)
+                return lambda *args, **kwargs: method(*args, with_async=True, **kwargs)
         return super().__getattr__(name)
 
     async def __afetch(self, cmd: str, *args: Any, **kargs: Any) -> Any:
