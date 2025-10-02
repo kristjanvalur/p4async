@@ -1,8 +1,8 @@
 """
 Tests that verify the wrapping and delegation patterns for async methods.
 
-These tests verify that async methods (like aconnect(), arun(), arun_login()) 
-properly delegate through the execute(), wrap_lock(), and sync_run() chain to 
+These tests verify that async methods (like aconnect(), arun(), arun_login())
+properly delegate through the execute(), wrap_lock(), and sync_run() chain to
 reach the underlying synchronous methods.
 """
 
@@ -19,13 +19,22 @@ if "p4async" not in sys.modules:
     sys.path.insert(0, str(__file__).rsplit("tests", 1)[0] + "src")
     try:
         import p4async as _p4async_source
+
         SIMPLE_WRAP_METHODS = list(_p4async_source.P4Async.simple_wrap_methods)
         RUN_WRAP_METHODS = list(_p4async_source.P4Async.run_wrap_methods)
     except ImportError:
         # Fallback if import fails
         SIMPLE_WRAP_METHODS = ["connect", "disconnect", "run_tickets"]
-        RUN_WRAP_METHODS = ["run_submit", "run_shelve", "delete_shelve", "run_login", 
-                            "run_password", "run_filelog", "run_print", "run_resolve"]
+        RUN_WRAP_METHODS = [
+            "run_submit",
+            "run_shelve",
+            "delete_shelve",
+            "run_login",
+            "run_password",
+            "run_filelog",
+            "run_print",
+            "run_resolve",
+        ]
 else:
     SIMPLE_WRAP_METHODS = list(sys.modules["p4async"].P4Async.simple_wrap_methods)
     RUN_WRAP_METHODS = list(sys.modules["p4async"].P4Async.run_wrap_methods)
@@ -36,7 +45,9 @@ class TestSimpleWrapMethods:
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("method_name", SIMPLE_WRAP_METHODS)
-    async def test_async_method_calls_through_execute_and_wrap_lock(self, p4async_module, method_name):
+    async def test_async_method_calls_through_execute_and_wrap_lock(
+        self, p4async_module, method_name
+    ):
         """Verify that async wrapper -> execute() -> wrap_lock(method) -> method()"""
         p4async = p4async_module
         p4 = p4async.P4Async()
@@ -125,23 +136,23 @@ class TestRunMethod:
         # We can't easily mock the parent class method due to super() behavior
         # Instead, let's verify that sync_run is called correctly, which is sufficient
         # to prove the call chain
-        
+
         # Call arun
         result = await p4.arun("info")
 
         # Verify execute was called
         assert execute_mock.call_count == 1, "execute() not called"
-        
+
         # Verify execute was called with sync_run
         execute_call_args = execute_mock.call_args
         assert execute_call_args[0][0] == p4.sync_run, "execute() should be called with sync_run"
 
         # Verify sync_run was called
         assert sync_run_mock.call_count == 1, "sync_run() not called"
-        
+
         # Verify sync_run was called with the command
         sync_run_mock.assert_called_once_with("info")
-        
+
         # Verify the result is correct (which proves super().run() was called)
         assert result == {"userName": "testuser"}
 
@@ -169,17 +180,17 @@ class TestRunMethod:
 
         # Verify execute was called
         assert execute_mock.call_count == 1, "execute() not called"
-        
+
         # Verify execute was called with sync_run
         execute_call_args = execute_mock.call_args
         assert execute_call_args[0][0] == p4.sync_run, "execute() should be called with sync_run"
 
         # Verify sync_run was called
         assert sync_run_mock.call_count == 1, "sync_run() not called"
-        
+
         # Verify sync_run was called with the command (with_async is NOT passed to sync_run)
         sync_run_mock.assert_called_once_with("changes")
-        
+
         # Verify the result is correct (which proves super().run() was called)
         assert result == [{"change": "12345"}]
 
@@ -243,11 +254,11 @@ class TestExecuteAndWrapping:
 
         # Add a test method to simple_wrap_methods
         p4.simple_wrap_methods.add("test_method")
-        
+
         # Create a mock method that accepts arguments
         def test_method(arg1, arg2, kwarg1=None):
             return f"called with {arg1}, {arg2}, {kwarg1}"
-        
+
         p4.test_method = Mock(side_effect=test_method)
 
         # Call the async version
@@ -265,6 +276,7 @@ class TestExecuteAndWrapping:
 
         # Track the thread ID where the connect method runs
         import threading
+
         main_thread_id = threading.get_ident()
         execution_thread_id = None
 
@@ -313,14 +325,18 @@ class TestRunWrapMethods:
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("method_name", RUN_WRAP_METHODS)
-    async def test_async_method_calls_sync_method_which_calls_run(self, p4async_module, method_name):
+    async def test_async_method_calls_sync_method_which_calls_run(
+        self, p4async_module, method_name
+    ):
         """Verify that async wrapper -> sync method -> run(with_async=True)"""
         p4async = p4async_module
         p4 = p4async.P4Async()
 
         # Register appropriate responses for methods that need them
         if "submit" in method_name or "shelve" in method_name:
-            p4.register_response("submit" if "submit" in method_name else "shelve", {"status": "ok"})
+            p4.register_response(
+                "submit" if "submit" in method_name else "shelve", {"status": "ok"}
+            )
         elif "login" in method_name:
             p4.register_response("login", {"status": "ok"})
         elif "password" in method_name:
@@ -344,7 +360,7 @@ class TestRunWrapMethods:
         # Call the async version
         async_method_name = f"a{method_name}"
         async_method = getattr(p4, async_method_name)
-        
+
         # Call with some test arguments (method-specific)
         if "password" in method_name:
             result = await async_method("oldpass", "newpass")
@@ -353,7 +369,7 @@ class TestRunWrapMethods:
 
         # Verify the sync method (e.g., run_login) was called
         assert method_mock.call_count == 1, f"{method_name} not called for {async_method_name}"
-        
+
         # Verify that with_async=True was passed to the sync method
         method_call_kwargs = method_mock.call_args.kwargs
         assert "with_async" in method_call_kwargs, f"with_async not passed to {method_name}"
@@ -361,7 +377,7 @@ class TestRunWrapMethods:
 
         # Verify run() was called (by the sync method)
         assert run_mock.call_count >= 1, f"run() not called by {method_name}"
-        
+
         # Verify that run() was called WITH with_async=True
         # The sync method receives with_async=True and passes it through to run()
         found_with_async = False
@@ -369,25 +385,32 @@ class TestRunWrapMethods:
             if "with_async" in call.kwargs and call.kwargs["with_async"] is True:
                 found_with_async = True
                 break
-        
+
         assert found_with_async, f"run() should receive with_async=True from {method_name}"
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("method_name,args,kwargs", [
-        ("run_submit", ("arg1",), {}),
-        ("run_shelve", ("arg1", "arg2"), {}),
-        ("delete_shelve", ("changelist",), {}),
-        ("run_login", (), {}),
-        ("run_password", ("old", "new"), {}),
-    ])
-    async def test_run_wrap_methods_pass_arguments_correctly(self, p4async_module, method_name, args, kwargs):
+    @pytest.mark.parametrize(
+        "method_name,args,kwargs",
+        [
+            ("run_submit", ("arg1",), {}),
+            ("run_shelve", ("arg1", "arg2"), {}),
+            ("delete_shelve", ("changelist",), {}),
+            ("run_login", (), {}),
+            ("run_password", ("old", "new"), {}),
+        ],
+    )
+    async def test_run_wrap_methods_pass_arguments_correctly(
+        self, p4async_module, method_name, args, kwargs
+    ):
         """Verify that arguments are passed correctly through run_wrap_methods"""
         p4async = p4async_module
         p4 = p4async.P4Async()
 
         # Register appropriate responses
         if "submit" in method_name or "shelve" in method_name:
-            p4.register_response("submit" if "submit" in method_name else "shelve", {"status": "ok"})
+            p4.register_response(
+                "submit" if "submit" in method_name else "shelve", {"status": "ok"}
+            )
         elif "login" in method_name:
             p4.register_response("login", {"status": "ok"})
         elif "password" in method_name:
@@ -405,11 +428,10 @@ class TestRunWrapMethods:
 
         # Verify run() was called (it will be called by the sync method)
         assert run_mock.call_count >= 1, f"run() not called for {async_method_name}"
-        
+
         # Verify with_async=True was passed to at least one call
         found_with_async = any(
-            call.kwargs.get("with_async") is True 
-            for call in run_mock.call_args_list
+            call.kwargs.get("with_async") is True for call in run_mock.call_args_list
         )
         assert found_with_async, f"run() was not called with with_async=True for {method_name}"
 

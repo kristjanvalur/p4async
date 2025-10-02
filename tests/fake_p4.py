@@ -54,14 +54,12 @@ class P4:
 
     def run_tickets(self, *args: Any) -> Any:
         """Fake implementation of run_tickets.
-        
+
         In the real P4, this reads from the ticket file directly without
         calling run(). For our fake, we'll return a simple fake ticket list.
         """
         # Return a simple fake ticket response without going through run()
-        return [
-            {"Host": "localhost:1666", "User": "testuser", "Ticket": "ABC123XYZ"}
-        ]
+        return [{"Host": "localhost:1666", "User": "testuser", "Ticket": "ABC123XYZ"}]
 
     def run_submit(self, *args: Any, **kwargs: Any) -> Any:
         """Simplified submit - delegates to run('submit')"""
