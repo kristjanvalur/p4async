@@ -97,23 +97,10 @@ class P4Async(P4.P4):
         return await self.execute(self.sync_run, *args, **kwargs)
 
     def __getattr__(self, name: str) -> Any:
-        if name.startswith("arun_"):
-            cmd = name[len("arun_") :]
-            return lambda *args, **kargs: self.arun(cmd, *args, **kargs)
-        elif name.startswith("adelete_"):
-            cmd = name[len("adelete_") :]
-            return lambda *args, **kargs: self.arun(cmd, "-d", *args, **kargs)
-        elif name.startswith("afetch_"):
-            cmd = name[len("afetch_") :]
-            return lambda *args, **kargs: self.__afetch(cmd, *args, **kargs)
-        elif name.startswith("asave_"):
-            cmd = name[len("asave_") :]
-            return lambda *args, **kargs: self.__asave(cmd, *args, **kargs)
-        elif name.startswith("aiterate_"):
-            cmd = name[len("aiterate_") :]
-            return lambda *args, **kargs: self.__aiterate(cmd, *args, **kargs)
         if name.startswith("a"):
             tail = name[1:]
+            # first check for specializations of run_ methods and others
+            # that can be wrapped simply.
             if tail in self.simple_wrap_methods:
                 # simple methods. wrapped with a lock and scheduled with execute.
                 method = self.wrap_lock(getattr(self, tail))
@@ -122,6 +109,23 @@ class P4Async(P4.P4):
                 # methods that delegate to self.run, can simply add the with_async flag.
                 method = getattr(self, tail)
                 return lambda *args, **kwargs: method(*args, with_async=True, **kwargs)
+            if name.startswith("arun_"):
+                cmd = name[len("arun_") :]
+                return lambda *args, **kargs: self.arun(cmd, *args, **kargs)
+            elif name.startswith("adelete_"):
+                cmd = name[len("adelete_") :]
+                return lambda *args, **kargs: self.arun(cmd, "-d", *args, **kargs)
+            # need to reimplement these since we can't use __getattr__ to catch them
+            elif name.startswith("afetch_"):
+                cmd = name[len("afetch_") :]
+                return lambda *args, **kargs: self.__afetch(cmd, *args, **kargs)
+            elif name.startswith("asave_"):
+                cmd = name[len("asave_") :]
+                return lambda *args, **kargs: self.__asave(cmd, *args, **kargs)
+            # aiterate is a special case that returns an async generator
+            elif name.startswith("aiterate_"):
+                cmd = name[len("aiterate_") :]
+                return lambda *args, **kargs: self.__aiterate(cmd, *args, **kargs)
         return super().__getattr__(name)
 
     async def __afetch(self, cmd: str, *args: Any, **kargs: Any) -> Any:
