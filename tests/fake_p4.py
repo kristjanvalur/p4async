@@ -52,6 +52,49 @@ class P4:
     def disconnect(self) -> None:
         self.connected = False
 
+    def run_tickets(self, *args: Any) -> Any:
+        """Fake implementation of run_tickets.
+        
+        In the real P4, this reads from the ticket file directly without
+        calling run(). For our fake, we'll return a simple fake ticket list.
+        """
+        # Return a simple fake ticket response without going through run()
+        return [
+            {"Host": "localhost:1666", "User": "testuser", "Ticket": "ABC123XYZ"}
+        ]
+
+    def run_submit(self, *args: Any, **kwargs: Any) -> Any:
+        """Simplified submit - delegates to run('submit')"""
+        return self.run("submit", *args, **kwargs)
+
+    def run_shelve(self, *args: Any, **kwargs: Any) -> Any:
+        """Simplified shelve - delegates to run('shelve')"""
+        return self.run("shelve", *args, **kwargs)
+
+    def delete_shelve(self, *args: Any, **kwargs: Any) -> Any:
+        """Simplified deletion of shelves - delegates to run('shelve', '-d')"""
+        return self.run("shelve", "-d", *args, **kwargs)
+
+    def run_login(self, *args: Any, **kwargs: Any) -> Any:
+        """Simple interface to make login easier - delegates to run('login')"""
+        return self.run("login", *args, **kwargs)
+
+    def run_password(self, oldpass: str, newpass: str, *args: Any, **kwargs: Any) -> Any:
+        """Simple interface for password - delegates to run('password')"""
+        return self.run("password", oldpass, newpass, *args, **kwargs)
+
+    def run_filelog(self, *args: Any, **kwargs: Any) -> Any:
+        """Run filelog command - delegates to run('filelog')"""
+        return self.run("filelog", *args, **kwargs)
+
+    def run_print(self, *args: Any, **kwargs: Any) -> Any:
+        """Run print command - delegates to run('print')"""
+        return self.run("print", *args, **kwargs)
+
+    def run_resolve(self, *args: Any, **kwargs: Any) -> Any:
+        """Run resolve command - delegates to run('resolve')"""
+        return self.run("resolve", *args, **kwargs)
+
     def register_response(self, cmd: str, response: Any) -> None:
         """Register a canned response for a command.
 
