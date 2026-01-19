@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Updated README to reflect that the GIL/blocking connect() issue was fixed in p4python 2025.2
+  - Changed prominent "Caveats" section to a footnote-style note
+  - Users are now advised to use p4python 2025.2 or later for optimal async performance
+
 ## [0.1.6] - 2025-10-02
 
 ### Added
