@@ -53,7 +53,8 @@ result = p4.run("clients", with_async=True)  # returns awaitable
 
 ### Thread Safety Requirements
 - All P4 operations must acquire `self.lock` before execution (see `sync_run()` and `wrap_lock()`)
-- The underlying p4python library is not thread-safe.
+- The p4python API allows threaded usage, but each underlying P4 connection permits only one in-flight request at a time.
+- `P4Async` therefore serializes access per instance/connection via `self.lock`.
 - Earlier p4python versions did not release the GIL during `connect()`, but this is fixed in p4python 2025.2+
 
 ### Typing Guidance
