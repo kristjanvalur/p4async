@@ -92,7 +92,7 @@ class P4Async(P4.P4):
 
     async def arun(self, *args: Any, **kwargs: Any) -> Any:
         """
-        Asynchronous  version of the `run` method.
+        Asynchronous version of the `run` method.
         """
         return await self.execute(self.sync_run, *args, **kwargs)
 
@@ -111,49 +111,49 @@ class P4Async(P4.P4):
                 return lambda *args, **kwargs: method(*args, with_async=True, **kwargs)
             if name.startswith("arun_"):
                 cmd = name[len("arun_") :]
-                return lambda *args, **kargs: self.arun(cmd, *args, **kargs)
+                return lambda *args, **kwargs: self.arun(cmd, *args, **kwargs)
             elif name.startswith("adelete_"):
                 cmd = name[len("adelete_") :]
-                return lambda *args, **kargs: self.arun(cmd, "-d", *args, **kargs)
+                return lambda *args, **kwargs: self.arun(cmd, "-d", *args, **kwargs)
             # need to reimplement these since we can't use __getattr__ to catch them
             elif name.startswith("afetch_"):
                 cmd = name[len("afetch_") :]
-                return lambda *args, **kargs: self.__afetch(cmd, *args, **kargs)
+                return lambda *args, **kwargs: self.__afetch(cmd, *args, **kwargs)
             elif name.startswith("asave_"):
                 cmd = name[len("asave_") :]
-                return lambda *args, **kargs: self.__asave(cmd, *args, **kargs)
+                return lambda *args, **kwargs: self.__asave(cmd, *args, **kwargs)
             # aiterate is a special case that returns an async generator
             elif name.startswith("aiterate_"):
                 cmd = name[len("aiterate_") :]
-                return lambda *args, **kargs: self.__aiterate(cmd, *args, **kargs)
+                return lambda *args, **kwargs: self.__aiterate(cmd, *args, **kwargs)
         return super().__getattr__(name)
 
-    async def __afetch(self, cmd: str, *args: Any, **kargs: Any) -> Any:
+    async def __afetch(self, cmd: str, *args: Any, **kwargs: Any) -> Any:
         """
         Handle async versions of fetch commands.
         """
-        result = await self.arun(cmd, "-o", *args, **kargs)
+        result = await self.arun(cmd, "-o", *args, **kwargs)
         for r in result:
             if isinstance(r, tuple) or isinstance(r, dict):
                 return r
         return result[0]
 
-    async def __aiterate(self, cmd: str, *args: Any, **kargs: Any):
+    async def __aiterate(self, cmd: str, *args: Any, **kwargs: Any):
         """
         Handle async versions of iterate commands.
         """
         if cmd not in self.specfields:
             raise Exception("Unknown spec list command: %s", cmd)
 
-        specs = await self.arun(cmd, *args, **kargs)
+        specs = await self.arun(cmd, *args, **kwargs)
         spec = self.specfields[cmd][0]
         field = self.specfields[cmd][1]
         for spec in specs:
             yield await self.arun(spec, "-o", spec[field])[0]
 
-    async def __asave(self, cmd: str, *args: Any, **kargs: Any) -> Any:
+    async def __asave(self, cmd: str, *args: Any, **kwargs: Any) -> Any:
         self.input = args[0]
-        return await self.arun(cmd, "-i", args[1:], **kargs)
+        return await self.arun(cmd, "-i", args[1:], **kwargs)
 
     async def __aenter__(self) -> "P4Async":
         """

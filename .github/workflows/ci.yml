@@ -30,7 +30,7 @@ jobs:
       - name: Sync project environment with uv
         run: |
           # Use locked installs when possible to ensure reproducible CI
-          uv sync --locked --all-extras --dev
+          uv sync --locked
 
       - name: Run lint/format checks with uvx
         run: |

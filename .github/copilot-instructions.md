@@ -25,7 +25,7 @@ p4.asave_change()     # -> self.__asave("change", ...)
 
 ### Environment Setup
 - **Package Manager**: Uses `uv` for dependency management and virtual environments
-- **Setup**: `uv sync --locked --all-extras --dev` (installs dev dependencies including pytest, pytest-asyncio)
+- **Setup**: `uv sync --locked` (includes the default dev dependency group, including pytest and pytest-asyncio)
 - **Python Version**: Requires Python 3.11+
 
 ### Testing Strategy

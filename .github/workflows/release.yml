@@ -38,7 +38,7 @@ jobs:
           enable-cache: true
       - name: Sync project environment with uv
         run: |
-          uv sync --locked --all-extras --dev
+          uv sync --locked
       - name: Run tests via uv
         run: |
           uv run pytest -q

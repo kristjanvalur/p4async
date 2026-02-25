@@ -7,10 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-02-25
+
 ### Changed
-- Updated README to reflect that the GIL/blocking connect() issue was fixed in p4python 2025.2
-  - Changed prominent "Caveats" section to a footnote-style note
-  - Users are now advised to use p4python 2025.2 or later for optimal async performance
+- Updated README to better describe p4python and p4async context
+  - Added links to both p4python PyPI and GitHub pages
+  - Added a new section on subclassing extension points (`execute`, `sync_run`, and wrapper method sets)
+- Updated project/development metadata and workflow configuration
+  - Switched dev dependencies to `[dependency-groups]`
+  - Simplified `uv sync` usage in workflows/docs (removed obsolete `--all-extras` and redundant `--dev`)
+  - Added package metadata for discoverability (`keywords`, classifiers, project URLs)
+  - Corrected the project `Issues` URL
+
+### Fixed
+- Minor typo cleanup in source naming and docs text
 
 ## [0.1.6] - 2025-10-02
 
@@ -73,7 +83,8 @@ Initial tagged release with basic async wrapper functionality.
 - Async context manager support (`async with P4Async()`)
 - Basic test suite
 
-[Unreleased]: https://github.com/kristjanvalur/p4async/compare/v0.1.6...HEAD
+[Unreleased]: https://github.com/kristjanvalur/p4async/compare/v0.1.7...HEAD
+[0.1.7]: https://github.com/kristjanvalur/p4async/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/kristjanvalur/p4async/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/kristjanvalur/p4async/compare/v.0.1.4...v0.1.5
 [0.1.4]: https://github.com/kristjanvalur/p4async/compare/v0.1.3...v.0.1.4

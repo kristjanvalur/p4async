@@ -22,25 +22,26 @@ wheels = [
 
 [[package]]
 name = "p4async"
-version = "0.1.6"
+version = "0.1.7"
 source = { editable = "." }
 dependencies = [
     { name = "p4python" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "p4python", specifier = ">=2020.1.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.22" },
+requires-dist = [{ name = "p4python", specifier = ">=2020.1.0" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=7.0" },
+    { name = "pytest-asyncio", specifier = ">=0.22" },
 ]
-provides-extras = ["dev"]
 
 [[package]]
 name = "p4python"
