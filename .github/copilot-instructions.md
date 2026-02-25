@@ -25,7 +25,7 @@ p4.asave_change()     # -> self.__asave("change", ...)
 
 ### Environment Setup
 - **Package Manager**: Uses `uv` for dependency management and virtual environments
-- **Setup**: `uv sync --locked` (includes the default dev dependency group, including pytest and pytest-asyncio)
+- **Setup**: `uv sync --locked` (includes the default dev dependency group, including pytest, pytest-asyncio, and mypy)
 - **Python Version**: Requires Python 3.11+
 
 ### Testing Strategy
@@ -45,6 +45,7 @@ result = p4.run("clients", with_async=True)  # returns awaitable
 ### CI/CD Commands
 - **Local Testing**: `uv run pytest -q`
 - **Linting**: `uvx ruff check` and `uvx ruff format --check`
+- **Type Checking**: `uv run mypy src`
 - **Build**: `uv build`
 - **Release**: Uses tag-based releases (`v*` for PyPI, `t*` for TestPyPI)
 
@@ -52,7 +53,13 @@ result = p4.run("clients", with_async=True)  # returns awaitable
 
 ### Thread Safety Requirements
 - All P4 operations must acquire `self.lock` before execution (see `sync_run()` and `wrap_lock()`)
-- The underlying p4python library is not thread-safe and doesn't release GIL during `connect()`
+- The underlying p4python library is not thread-safe.
+- Earlier p4python versions did not release the GIL during `connect()`, but this is fixed in p4python 2025.2+
+
+### Typing Guidance
+- Keep type checking focused on this package (`src`) with `mypy`.
+- Treat `P4` as an untyped external dependency via mypy override (`ignore_missing_imports` for module `P4`).
+- `disallow_untyped_defs` is enabled to require annotations for project-defined functions.
 
 ### Async Context Manager
 - Implements `__aenter__`/`__aexit__` for `async with` usage
