@@ -1,7 +1,7 @@
 import asyncio
 import functools
 import threading
-from typing import Any, Awaitable, Callable, Optional, Set, Type, Union
+from typing import Any, AsyncIterator, Awaitable, Callable, Optional, Set, Type, Union
 
 import P4
 
@@ -84,7 +84,7 @@ class P4Async(P4.P4):
         """
 
         @functools.wraps(method)
-        def helper(*args, **kwargs):
+        def helper(*args: Any, **kwargs: Any) -> Any:
             with self.lock:
                 return method(*args, **kwargs)
 
@@ -138,7 +138,7 @@ class P4Async(P4.P4):
                 return r
         return result[0]
 
-    async def __aiterate(self, cmd: str, *args: Any, **kwargs: Any):
+    async def __aiterate(self, cmd: str, *args: Any, **kwargs: Any) -> AsyncIterator[Any]:
         """
         Handle async versions of iterate commands.
         """

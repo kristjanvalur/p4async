@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-02-25
+
+### Added
+- Added `mypy` to development dependencies and integrated type checking into CI (`uv run mypy src`)
+
+### Changed
+- Added project-level mypy configuration targeting `src` with a `P4` import override
+- Increased typing strictness with `disallow_untyped_defs = true`
+- Expanded README development guidance with ruff and mypy commands
+
+### Fixed
+- Fixed async iterator implementation to await command results before indexing
+- Added missing type annotations in internal helper/iterator methods for stricter type checking
+
 ## [0.1.7] - 2026-02-25
 
 ### Changed
@@ -83,7 +97,8 @@ Initial tagged release with basic async wrapper functionality.
 - Async context manager support (`async with P4Async()`)
 - Basic test suite
 
-[Unreleased]: https://github.com/kristjanvalur/p4async/compare/v0.1.7...HEAD
+[Unreleased]: https://github.com/kristjanvalur/p4async/compare/v0.1.8...HEAD
+[0.1.8]: https://github.com/kristjanvalur/p4async/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/kristjanvalur/p4async/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/kristjanvalur/p4async/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/kristjanvalur/p4async/compare/v.0.1.4...v0.1.5

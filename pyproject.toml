@@ -1,6 +1,6 @@
 [project]
 name = "p4async"
-version = "0.1.7"
+version = "0.1.8"
 description = "An async extension to p4python"
 readme = "README.md"
 authors = [
@@ -55,6 +55,7 @@ lint.select = ["I"]
 [tool.mypy]
 python_version = "3.11"
 files = ["src"]
+disallow_untyped_defs = true
 
 [[tool.mypy.overrides]]
 module = ["P4"]
