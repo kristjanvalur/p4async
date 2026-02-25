@@ -38,6 +38,7 @@ jobs:
           # If uvx isn't present the step will fail naturally.
           uvx ruff check
           uvx ruff format --check
+          uv run mypy src
 
       - name: Run tests via uv
         run: |

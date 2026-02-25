@@ -149,7 +149,8 @@ class P4Async(P4.P4):
         spec = self.specfields[cmd][0]
         field = self.specfields[cmd][1]
         for spec in specs:
-            yield await self.arun(spec, "-o", spec[field])[0]
+            spec_data = await self.arun(spec, "-o", spec[field])
+            yield spec_data[0]
 
     async def __asave(self, cmd: str, *args: Any, **kwargs: Any) -> Any:
         self.input = args[0]

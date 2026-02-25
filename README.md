@@ -59,6 +59,12 @@ class MyP4Async(P4Async):
 ## Development
 
 - Use [uv](https://docs.astral.sh/uv/) for dependency management and virtual environments.
+- Format and lint with ruff:
+    - `uvx ruff check`
+    - `uvx ruff format --check`
+    - `uvx ruff format`
+- Run type checking for the package:
+    - `uv run mypy src`
 
 ## License
 
