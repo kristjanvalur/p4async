@@ -1,6 +1,6 @@
 [project]
 name = "p4async"
-version = "0.1.8"
+version = "0.1.9"
 description = "An async extension to p4python"
 readme = "README.md"
 authors = [
@@ -28,7 +28,7 @@ license-files = ["LICEN[CS]E*"]
 [project.urls]
 Homepage = "https://github.com/kristjanvalur/p4async"
 Source = "https://github.com/kristjanvalur/p4async"
-Changelog = "https://github.com/kristjanvalur/p4async/blob/main/CHANGELOG.md"
+Changelog = "https://github.com/kristjanvalur/p4async/blob/master/CHANGELOG.md"
 Issues = "https://github.com/kristjanvalur/p4async/issues"
 
 [build-system]

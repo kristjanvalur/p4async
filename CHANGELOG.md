@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-02-25
+
+### Fixed
+- Corrected project changelog URL in package metadata to use the `master` branch
+
 ## [0.1.8] - 2026-02-25
 
 ### Added
@@ -97,7 +102,8 @@ Initial tagged release with basic async wrapper functionality.
 - Async context manager support (`async with P4Async()`)
 - Basic test suite
 
-[Unreleased]: https://github.com/kristjanvalur/p4async/compare/v0.1.8...HEAD
+[Unreleased]: https://github.com/kristjanvalur/p4async/compare/v0.1.9...HEAD
+[0.1.9]: https://github.com/kristjanvalur/p4async/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/kristjanvalur/p4async/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/kristjanvalur/p4async/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/kristjanvalur/p4async/compare/v0.1.5...v0.1.6
