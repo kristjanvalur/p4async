@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Declare and test support for Python 3.12, 3.13 and 3.14 (p4python ships wheels for these)
+
 ## [0.1.9] - 2026-02-25
 
 ### Fixed
