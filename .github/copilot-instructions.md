@@ -15,10 +15,10 @@ This is an async wrapper around Perforce's `p4python` library. The core class `P
 ### Method Naming Conventions
 ```python
 # Auto-generated patterns in __getattr__:
-p4.arun_clients()     # -> self.arun("clients", ...)
-p4.adelete_shelve()   # -> self.arun("shelve", "-d", ...)  
-p4.afetch_change()    # -> self.__afetch("change", ...)
-p4.asave_change()     # -> self.__asave("change", ...)
+p4.arun_clients()  # -> self.arun("clients", ...)
+p4.adelete_shelve()  # -> self.arun("shelve", "-d", ...)
+p4.afetch_change()  # -> self.__afetch("change", ...)
+p4.asave_change()  # -> self.__asave("change", ...)
 ```
 
 ## Development Workflow

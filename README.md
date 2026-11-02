@@ -15,6 +15,7 @@ Use your favorite package manager to install the module into your project
 
 ```python
 from p4async import P4Async
+
 p4a = P4Async()
 await p4a.aconnect()
 ```
