@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-11-02
+
 ### Added
+- Release workflow now creates a GitHub release for `v*` tags
 - Declare and test support for Python 3.12, 3.13 and 3.14 (p4python ships wheels for these)
 
 ## [0.1.9] - 2026-02-25
